@@ -28,17 +28,33 @@ class mass(object):
         #Add new row to df with current values
         self.df = self.df.append(pd.DataFrame({"mass":[self.mass], "position":[self.position], "momentum":[self.momentum]}), ignore_index=True)
 
-def get_inits():
-    #Read initial conditions from inits.txt
-    inits = open("inits.txt","r")
-    time_init = eval(inits.readline())
-    m1_init = eval(inits.readline())
-    m2_init = eval(inits.readline())
-    return (time_init, m1_init, m2_init)
+def get_init():
+    #Read initial conditions from inits.json
+    init = open("inits.json","r")
+    return eval(init.read())
+
+def inertia_tensor(mass):
+    #Calulates the inertia tensor
+    inertia = np.array([[mass.position[1]**2 + mass.position[2]**2, -mass.position[0]*mass.position[1], -mass.position[0]*mass.position[2]],
+                        [-mass.position[0]*mass.position[1], mass.position[0]**2 + mass.position[2]**2, -mass.position[1]*mass.position[2]],
+                        [-mass.position[0]*mass.position[2], -mass.position[0]*mass.position[1], mass.position[0]**2 + mass.position[1]**2]])
+    return inertia
+    
+def quadrupole_tensor(mass):
+    #Calulates the quadrupole tensor
+    quadrupole = np.array([[-(mass.position[1]**2 + mass.position[2]**2) + np.trace(inertia_tensor(mass))/3, mass.position[0]*mass.position[1], mass.position[0]*mass.position[2]],
+                           [mass.position[0]*mass.position[1], -(mass.position[0]**2 + mass.position[2]**2) + np.trace(inertia_tensor(mass))/3, mass.position[1]*mass.position[2]],
+                           [mass.position[0]*mass.position[2], mass.position[0]*mass.position[1], -(mass.position[0]**2 + mass.position[1]**2) + np.trace(inertia_tensor(mass))/3]])
+    return quadrupole
+
+def gravity_wave_power(mass):
+    #Calulates the gravity wave power
+    pass
     
 def main():
     #Main
-    (time_init,m1_init,m2_init) = get_inits()
+    init = get_init()
+    time_init, m1_init, m2_init = init["time_init"], init["m1_init"], init["m2_init"]
     #Create masses
     m1 = mass(m1_init)
     m2 = mass(m2_init)
