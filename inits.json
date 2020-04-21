@@ -1,3 +1,0 @@
-{"time_init":{"time_step":0.01,"total_steps":100},
-"m1_init":{"mass":1,"position":np.array([1,1,1]),"momentum":np.array([1,0,0])},
-"m2_init":{"mass":10,"position":np.array([0,0,0]),"momentum":np.array([0,0,0])}}
